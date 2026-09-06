@@ -7,13 +7,9 @@ from app.config import BUG_TOGGLES, SIM_CONFIG
 from app.models import Order
 
 
+# Removed manual ID generation so the database can assign the primary key atomically.
 def create_order_buggy(db: Session, user_id: int, product_id: int, quantity: int) -> Order:
-    max_id = db.execute(text("SELECT MAX(id) FROM orders")).scalar() or 0
-    # Widens the read-then-write window so concurrent requests reliably
-    # compute the same "next id" from the same stale MAX(id) read.
-    time.sleep(SIM_CONFIG["order_race_window_ms"] / 1000)
-    new_id = max_id + 1
-    order = Order(id=new_id, user_id=user_id, product_id=product_id, quantity=quantity)
+    order = Order(user_id=user_id, product_id=product_id, quantity=quantity)
     db.add(order)
     db.commit()
     db.refresh(order)
@@ -26,6 +22,7 @@ def create_order_fixed(db: Session, user_id: int, product_id: int, quantity: int
     db.commit()
     db.refresh(order)
     return order
+
 
 
 def create_order(db: Session, user_id: int, product_id: int, quantity: int) -> Order:
