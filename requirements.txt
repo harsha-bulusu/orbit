@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+httpx
+pydantic
+python-json-logger
+opentelemetry-sdk
+opentelemetry-instrumentation-logging
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-sqlalchemy
+opentelemetry-exporter-prometheus
